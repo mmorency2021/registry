@@ -98,6 +98,7 @@ $ podman run \
     registry:2.7
 ```
 $ # Ensure we have the Firewall opened
+```bash
 $ firewall-cmd --add-port 5000/tcp --permanent
 $ firewall-cmd --reload
 $ firewall-cmd --list-all
@@ -116,10 +117,11 @@ public (active)
   icmp-blocks:
   rich rules:
 Check the internal registry
-
+```
 $ # To check that the registry it's up and running,
 $ # we need to write down the pull_secret.json
-$ cat << EOF > pull-secret.json
+```json
+cat << EOF > pull-secret.json
 {
   "auths": {
     "registry.clus3a.t5g.lab.eng.bos.redhat.com:5000": {
@@ -128,7 +130,7 @@ $ cat << EOF > pull-secret.json
   }
 }
 EOF
-
+```
 $ # Install skopeo tool
 $ dnf install skopeo -y
 
