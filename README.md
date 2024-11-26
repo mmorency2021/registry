@@ -357,19 +357,20 @@ $ # we specified when we mirrored the images
 $ $ oc image mirror \
 -a ${LOCAL_SECRET_JSON} \
 --from-dir=${REMOVABLE_MEDIA_PATH}/mirror "file://openshift/release:${OCP_RELEASE}*" ${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}
-
+```bash
 $ # Create the installation program that is based on the content
 $ # that we mirrored
 $ oc adm release extract \
 -a ${LOCAL_SECRET_JSON} \
 --command=openshift-baremetal-install \
 "${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}"
-
+```
 $ # Ensure that we use the correct images for the version of
 $ # OpenShift Container Platform that we selected
 $ openshift-baremetal-install version
 
 $ # Check new added repository
+```bash
 $ podman search --authfile pull-secret.json registry.clus3a.t5g.lab.eng.bos.redhat.com:5000/ocp4
 $ ll registry/data/docker/registry/v2/repositories
 $ ll registry/data/docker/registry/v2/repositories/ocp4/
