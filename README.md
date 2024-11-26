@@ -4,10 +4,11 @@ Install podman program
 
 $ dnf install podman -y
 Set up credentials for our internal registry
-
+```bash
 $ # Create registry root directory
 $ mkdir -p /opt/registry/{auth,certs,data}
-
+```
+```bash
 $ # Create certificate for our internal registry
 $ openssl req \
   -newkey rsa:4096 \
@@ -19,20 +20,26 @@ $ openssl req \
   -out /opt/registry/certs/registry.crt \
   -addext "subjectAltName = DNS:registry.clus3a.t5g.lab.eng.bos.redhat.com" \
   -subj "/C=US/ST=Texas/L=Austin/O=Red Hat/OU=infra/CN=registry.clus3a.t5g.lab.eng.bos.redhat.com"
-
+```
 $ # Load the registry.crt into our host ca-trust bundle,
 $ # in order to trust it as a CA
-$ cp \
-  /opt/registry/certs/registry.crt /etc/pki/ca-trust/source/anchors/
+```bash
+$ cp /opt/registry/certs/registry.crt /etc/pki/ca-trust/source/anchors/
 $ update-ca-trust extract
-
+```
 $ # Create the htpasswd file with the user password dummy 
 $ # that will be the authentication needed on your Pull 
 $ # Secret to access the registry
+```bash
 $ htpasswd -bBc /opt/registry/auth/htpasswd dummy dummy
 Create internal registry configuration
+```
 
+```bash
 $ mkdir -p /opt/registry/conf/
+```
+
+```yaml
 $ cat << EOF > /opt/registry/conf/config.yml
 version: 0.1
 log:
@@ -56,20 +63,23 @@ compatibility:
   schema1:
     enabled: true
 EOF
-
+```
 $ # NOTE: One of the most important parts it's the scheme 
 $ # compatibility, without that, the mirroring process will not work.
+```bash
 $ tail -3 /opt/registry/conf/config.yml
 compatibility:
   schema1:
     enabled: true
 Start up the internal registry
+```
 
 $ # Login your docker account
 $  podman login docker.io -u <your_id> 
 
 $ # Create our podman registry container to host the OCP and OLM
 $ # Container Images
+```bash
 $ podman run \
     --name registry \
     -d \
@@ -86,7 +96,7 @@ $ podman run \
     -v /opt/registry/data:/registry:z \
     -v /opt/registry/conf/config.yml:/etc/docker/registry/config.yml:z \
     registry:2.7
-
+```
 $ # Ensure we have the Firewall opened
 $ firewall-cmd --add-port 5000/tcp --permanent
 $ firewall-cmd --reload
