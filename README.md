@@ -374,3 +374,45 @@ $ # Check new added repository
 $ podman search --authfile pull-secret.json registry.clus3a.t5g.lab.eng.bos.redhat.com:5000/ocp4
 $ ll registry/data/docker/registry/v2/repositories
 $ ll registry/data/docker/registry/v2/repositories/ocp4/
+
+
+
+###using oc-mirror
+```yaml
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v2alpha1
+mirror:
+  platform:
+    channels:
+    - name: stable-4.16
+      minVersion: 4.16.17
+      maxVersion: 4.16.17
+      type: ocp
+  operators:
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.16
+    full: false
+  - catalog: registry.redhat.io/redhat/certified-operator-index:v4.16
+    full: false
+  - catalog: registry.redhat.io/redhat/community-operator-index:v4.16
+    full: false
+  additionalImages:
+  - name: registry.redhat.io/ubi8/ubi:latest
+  - name: registry.redhat.io/openshift4/ose-cli:latest
+```
+```bash
+oc-mirror --v2 -c imageset-config.yaml --loglevel debug --workspace file:////oc-mirror-1/ docker://registry.integration.core.bos2.lab:5000/mirror 2>&1 | tee oc-mirror-local-registry.txt
+```
+
+```bash
+podman search --authfile /run/user/0/containers/auth.json registry.integration.core.bos2.lab:5000/mirror
+NAME                                                                                                                      DESCRIPTION
+registry.integration.core.bos2.lab:5000/mirror/amq7/amq-broker-rhel8                                                      
+registry.integration.core.bos2.lab:5000/mirror/aws-controllers-k8s/cloudtrail-controller                                  
+registry.integration.core.bos2.lab:5000/mirror/aws-controllers-k8s/keyspaces-controller                                   
+registry.integration.core.bos2.lab:5000/mirror/datagrid/datagrid-8-rhel8                                                  
+registry.integration.core.bos2.lab:5000/mirror/gitlab-org/cloud-native/gitlab-operator                                    
+registry.integration.core.bos2.lab:5000/mirror/korrel8r/operator                                                          
+registry.integration.core.bos2.lab:5000/mirror/kubevirt/virtio-container-disk                                             
+registry.integration.core.bos2.lab:5000/mirror/loadcore/kcos-keycloak                                            
+
+```
